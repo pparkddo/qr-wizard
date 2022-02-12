@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Wizard</title>
+</head>
+<body>
+  <div>
+    <p>와이파이 비밀번호 찾기</p>
+  </div>
+  <div>
+    <button id="findByFacingCam">🎥 캠으로 찾기</button>
+    <button id="stopFacingCam" hidden>캠 종료</button>
+    <div id="loadingMessage"></div>
+    <canvas id="canvas" hidden></canvas>
+    <div id="output" hidden>
+      <div id="outputMessage">No QR code detected.</div>
+      <div hidden><span id="outputData"></span></div>
+    </div>
+  </div>
+  <div>
+    <a href="/wifi-password/find-by-file" th:href="@{/wifi-password/find-by-file}">이미지 파일로 찾기</a>
+  </div>
+  <script src="/js/jsQR.js"></script>
+  <script src="/js/wifi-password.js"></script>
+</body>
+</html>

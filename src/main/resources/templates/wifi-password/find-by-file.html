@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+  <form th:action="@{/wifi-password/find-by-file}" method="post" enctype="multipart/form-data">
+    <div>
+      <p>이미지 파일로 와이파이 비밀번호 찾기</p>
+      <input type="file" name="file" />
+    </div>
+    <div>
+      <button>submit</button>
+    </div>
+  </form>
+</body>
+</html>
