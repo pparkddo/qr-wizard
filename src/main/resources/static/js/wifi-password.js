@@ -4,6 +4,14 @@ class WifiPassword {
     return "#FF3B58";
   }
 
+  static WIFI_DELIMITER() {
+    return ";";
+  }
+
+  static WIFI_PASSWORD_PREFIX() {
+    return "P:";
+  }
+
   constructor() {
     this.video = null;
     this.canvasElement = null;
@@ -22,12 +30,12 @@ class WifiPassword {
     this.video = document.createElement("video");
     this.canvasElement = document.getElementById("canvas");
     this.canvas = this.canvasElement.getContext("2d");
-    this.loadingMessage = document.getElementById("loadingMessage");
+    this.loadingMessage = document.getElementById("loading-message");
     this.outputContainer = document.getElementById("output");
-    this.outputMessage = document.getElementById("outputMessage");
-    this.outputData = document.getElementById("outputData");
-    this.findByFacingCamButton = document.getElementById("findByFacingCam");
-    this.stopFacingCamButton = document.getElementById("stopFacingCam");
+    this.outputMessage = document.getElementById("output-message");
+    this.outputData = document.getElementById("output-data");
+    this.findByFacingCamButton = document.getElementById("find-by-facing-cam");
+    this.stopFacingCamButton = document.getElementById("stop-facing-cam");
   }
 
   _bindEvent() {
@@ -60,8 +68,12 @@ class WifiPassword {
     this.canvas.stroke();
   }
 
-  _useFacingCam() {
+  _noticeVideoLoading() {
     this.loadingMessage.innerText = "⌛ Loading video...";
+  }
+
+  _useFacingCam() {
+    this._noticeVideoLoading();
 
     // Use facingMode: environment to attempt to get the front camera on phones
     navigator.mediaDevices
@@ -80,7 +92,7 @@ class WifiPassword {
     }
 
     if (this.video.readyState !== this.video.HAVE_ENOUGH_DATA) {
-      this.loadingMessage.innerText = "⌛ Loading video...";
+      this._noticeVideoLoading();
       requestAnimationFrame(() => this._tick());
       return;
     }
@@ -98,7 +110,7 @@ class WifiPassword {
       imageData.data,
       imageData.width,
       imageData.height,
-      { inversionAttempts: "dontInvert"}
+      { inversionAttempts: "dontInvert" }
     );
 
     if (code) {
@@ -106,9 +118,20 @@ class WifiPassword {
       this._drawLine(code.location.topRightCorner, code.location.bottomRightCorner, WifiPassword.QR_STROKE_COLOR());
       this._drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, WifiPassword.QR_STROKE_COLOR());
       this._drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, WifiPassword.QR_STROKE_COLOR());
-      this.outputMessage.hidden = true;
       this.outputData.parentElement.hidden = false;
-      this.outputData.innerText = code.data;
+
+      const data = code.data;
+      try {
+        const wifiPassword = this._extractQrPassword(code.data);
+        if (wifiPassword) {
+          this._stopFacingCam();
+          this._goToResultPage(wifiPassword);
+        }
+      }
+      catch (e) {
+        this.outputMessage.innerText = "올바른 와이파이 QR 이 아닙니다";
+        this.outputData.innerText = data;
+      }
     }
     else {
       this.outputMessage.hidden = false;
@@ -116,6 +139,15 @@ class WifiPassword {
     }
 
     requestAnimationFrame(() => this._tick());
+  }
+
+  _goToResultPage(pw) {
+    location.href = `/wifi-password/show?pw=${pw}`;
+  }
+
+  _extractQrPassword(value) {
+    const separatedByDelimiter = value.split(WifiPassword.WIFI_DELIMITER())[2];
+    return separatedByDelimiter.split(WifiPassword.WIFI_PASSWORD_PREFIX())[1];
   }
 }
 

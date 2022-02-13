@@ -8,6 +8,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import com.pparkddo.qrwizard.exception.QrException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -23,31 +24,23 @@ public class QrReaderService {
     }
 
     private BinaryBitmap convertToBinaryBitmap(MultipartFile multipartFile) {
-        BinaryBitmap binaryBitmap = null;
         try {
             BufferedImage bufferedImage = ImageIO.read(multipartFile.getInputStream());
             BufferedImageLuminanceSource bufferedImageLuminanceSource =
                 new BufferedImageLuminanceSource(bufferedImage);
             HybridBinarizer hybridBinarizer = new HybridBinarizer(bufferedImageLuminanceSource);
-            binaryBitmap = new BinaryBitmap(hybridBinarizer);
+            return new BinaryBitmap(hybridBinarizer);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new QrException("파일을 읽을 수 없어요");
         }
-        return binaryBitmap;
     }
 
     private String extract(BinaryBitmap binaryBitmap) {
-        String value = null;
         try {
             Result result = new QRCodeReader().decode(binaryBitmap);
-            value = result.getText();
-        } catch (NotFoundException e) {
-            e.printStackTrace();
-        } catch (ChecksumException e) {
-            e.printStackTrace();
-        } catch (FormatException e) {
-            e.printStackTrace();
+            return result.getText();
+        } catch (NotFoundException | ChecksumException | FormatException e) {
+            throw new QrException("QR 코드를 해석할 수 없어요");
         }
-        return value;
     }
 }

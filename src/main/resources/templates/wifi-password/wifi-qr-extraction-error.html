@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="kr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Wizard</title>
+  <style>
+    #message {
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="message" th:text="${message}">message</h1>
+  <label for="qr-data">추출된 QR 데이터</label>
+  <h2 id="qr-data" th:text="${qrData}">qrData</h2>
+</body>
+</html>

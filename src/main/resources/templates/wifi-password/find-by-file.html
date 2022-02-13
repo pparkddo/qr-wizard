@@ -2,17 +2,31 @@
 <html lang="kr" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>QR Wizard</title>
 </head>
 <body>
   <form th:action="@{/wifi-password/find-by-file}" method="post" enctype="multipart/form-data">
     <div>
-      <p>이미지 파일로 와이파이 비밀번호 찾기</p>
-      <input type="file" name="file" />
+      <h1>이미지 파일로 와이파이 비밀번호 찾기</h1>
+      <input id="image-file-input" type="file" name="file" />
     </div>
     <div>
-      <button>submit</button>
+      <button id="submit-button" disabled>비밀번호 확인하기</button>
     </div>
   </form>
+  <script>
+    const imageFileInput = document.getElementById("image-file-input");
+    const submitButton = document.getElementById("submit-button");
+
+    imageFileInput.addEventListener("change", () => {
+      submitButton.disabled = false;
+    });
+
+    window.onload = () => {
+      if (imageFileInput.files) {
+        submitButton.disabled = false;
+      }
+    };
+  </script>
 </body>
 </html>
